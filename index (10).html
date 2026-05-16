@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Mãe Terra Kids – Concepção à Adolescência</title>
+  <link rel="manifest" href="data:application/manifest+json,{ \"name\":\"Mãe Terra Kids\", \"short_name\":\"MãeTerra\", \"start_url\":\".\", \"display\":\"standalone\", \"theme_color\":\"#2a6b3c\", \"background_color\":\"#f4f9f0\" }">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+      }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: #f4f9f0;
+      color: #1e3a2f;
+      line-height: 1.4;
+    }
+    .top-bar {
+      background: #2a6b3c;
+      color: white;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+    header {
+      background: white;
+      padding: 1rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #f0e2c5;
+    }
+    .logo { display: flex; align-items: center; gap: 0.8rem; }
+    .logo-icon {
+      background: #f4a261;
+      width: 50px; height: 50px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+    .logo h1 { color: #2a6b3c; font-size: 1.5rem; }
+    .logo p { font-size: 0.7rem; color: #5a6e57; }
+    .payment-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .payment-btn {
+      background: #ffedd5;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .forms-area { flex: 2; min-width: 300px; }
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.5rem;
+      margin-bottom: 1.8rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-2px); }
+    h2 {
+      color: #2a6b3c;
+      border-left: 6px solid #f4a261;
+      padding-left: 1rem;
+      margin-bottom: 1rem;
+    }
+    h3 { color: #c4450c; margin: 1rem 0 0.5rem; }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-weight: 600; margin-bottom: 0.3rem; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
+    button.primary, button.secondary {
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    button.primary { background: #2a6b3c; color: white; }
+    button.secondary { background: #f4a261; color: #2c3e2b; }
+    .result-area {
+      background: #fef9ef;
+      border-radius: 20px;
+      padding: 1rem;
+      margin-top: 1rem;
+      display: none;
+    }
+    .info-area { flex: 1.2; min-width: 280px; }
+    .canvas-3d {
+      width: 100%;
+      height: 220px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      background: #d9e6c3;
+    }
+    .chat-box {
+      background: #fefaf0;
+      border-radius: 24px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .chat-history {
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .message {
+      padding: 0.6rem 1rem;
+      border-radius: 20px;
+      max-width: 85%;
+    }
+    .user-msg { background: #dcfce7; align-self: flex-end; }
+    .bot-msg { background: #eef2ff; align-self: flex-start; }
+    .chat-input { display: flex; gap: 0.5rem; }
+    .chat-input input { flex: 1; }
+    .premium-banner {
+      background: #fff3e0;
+      border-radius: 20px;
+      padding: 0.8rem;
+      margin-top: 1rem;
+      display: none;
+      border-left: 5px solid #f4a261;
+    }
+    .service-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .service-card {
+      background: #fef9ef;
+      border-radius: 20px;
+      padding: 1rem;
+      flex: 1;
+      min-width: 180px;
+      border: 1px solid #ffe0b5;
+    }
+    .service-card h4 { color: #2a6b3c; margin-bottom: 0.5rem; }
+    .service-price { font-size: 1.3rem; font-weight: bold; color: #c4450c; }
+    .btn-agendar {
+      background: #2a6b3c;
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 30px;
+      width: 100%;
+      margin-top: 0.8rem;
+      cursor: pointer;
+    }
+    .whatsapp-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #25D366;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 40px;
+      text-decoration: none;
+      margin-top: 1rem;
+    }
+    .db-buttons { display: flex; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap; }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 28px;
+      max-width: 90%;
+      max-height: 80%;
+      overflow: auto;
+      width: 600px;
+    }
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #2a6b3c;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 40px;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none;
+    }
+    .thankyou-message {
+      background: #d4edda;
+      border-left: 6px solid #28a745;
+      padding: 1rem;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: #2a6b3c;
+      color: white;
+      margin-top: 2rem;
+    }
+    @media (max-width: 800px) {
+      .container { flex-direction: column; }
+      header { flex-direction: column; text-align: center; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="top-bar">
+  <span>🌱 Mãe Terra Kids – Informação da concepção à adolescência</span>
+  <span>📞 Consultas 24h: WhatsApp <strong>845856602</strong></span>
+</div>
+<header>
+  <div class="logo">
+    <div class="logo-icon">🌿</div>
+    <div><h1>Mãe Terra Kids</h1><p>Nascer Bem · Crescer Melhor</p></div>
+  </div>
+  <div class="payment-buttons">
+    <button class="payment-btn" data-number="845856602">💳 M-Pesa: 845856602</button>
+    <button class="payment-btn" data-number="873850324">💳 E-mola: 873850324</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="forms-area">
+    <!-- PRÉ-NATAL -->
+    <div class="card">
+      <h2>🤰 Consulta Pré-Natal</h2>
+      <p><strong>Avaliação básica gratuita:</strong> IMC, pressão, batimentos, alertas.</p>
+      <p><strong>🔒 Para idade gestacional e data de parto:</strong> adquira a consulta completa por <strong>50 MZN</strong>.</p>
+      <form id="formPreNatal">
+        <div class="form-group"><label>Nome completo</label><input type="text" id="pnNome" required></div>
+        <div class="form-group"><label>Idade (anos)</label><input type="number" id="pnIdade" required></div>
+        <div class="form-group"><label>Contacto</label><input type="tel" id="pnContacto" required></div>
+        <div class="form-group"><label>Localização (Cidade/Província)</label><input type="text" id="pnLocal" required></div>
+        <div class="form-group"><label>Data da última menstruação (DUM)</label><input type="date" id="pnDUM" required></div>
+        <div class="form-group"><label>Peso (kg)</label><input type="number" step="0.1" id="pnPeso" required></div>
+        <div class="form-group"><label>Altura (m)</label><input type="number" step="0.01" id="pnAltura" required></div>
+        <div class="form-group"><label>Pressão arterial</label><input type="text" id="pnPA" placeholder="120/80"></div>
+        <div class="form-group"><label>Batimentos cardíacos fetais (bpm)</label><input type="number" id="pnBCF"></div>
+        <button type="button" id="btnAvaliarGratuito" class="primary">📊 Avaliação gratuita (IMC, alertas)</button>
+        <button type="button" id="btnComprarPrenatal" class="secondary" style="margin-left:1rem;">💰 Adquirir estimativas (50 MZN)</button>
+      </form>
+      <div id="resultPreNatal" class="result-area"></div>
+    </div>
+
+    <!-- PÓS-NATAL -->
+    <div class="card">
+      <h2>👶 Consulta Pós-Natal (Desenvolvimento)</h2>
+      <p><strong>Valor: 100 MZN</strong> – avaliação completa psicomotora e de linguagem.</p>
+      <div id="posnatalStatus" class="result-area" style="background:#f8d7da; display:block; margin-bottom:1rem;">⚠️ Pagamento necessário para aceder à avaliação.</div>
+      <form id="formPosNatal">
+        <div class="form-group"><label>Nome da criança</label><input type="text" id="posNome" required></div>
+        <div class="form-group"><label>Idade (meses)</label><input type="number" id="posIdade" required></div>
+        <div class="form-group"><label>Localização</label><input type="text" id="posLocal" required></div>
+        <div class="form-group"><label>Peso (kg)</label><input type="number" step="0.1" id="posPeso"></div>
+        <div class="form-group"><label>Altura (cm)</label><input type="number" step="0.5" id="posAltura"></div>
+        <h3>🧸 Desenvolvimento Psicomotor</h3>
+        <select id="psimMotor"><option value="">Senta sem apoio?</option><option value="sim">Sim</option><option value="nao">Não</option></select>
+        <select id="psimEngatinha"><option value="">Engatinha?</option><option value="sim">Sim</option><option value="nao">Não</option></select>
+        <select id="psimAnda"><option value="">Anda com apoio?</option><option value="sim">Sim</option><option value="nao">Não</option></select>
+        <h3>🗣️ Linguagem</h3>
+        <select id="langBalbucio"><option value="">Balbucia?</option><option value="sim">Sim</option><option value="nao">Não</option></select>
+        <select id="langPalavras"><option value="">Diz palavras?</option><option value="sim">Sim</option><option value="nao">Não</option></select>
+        <select id="langCompreende"><option value="">Compreende ordens?</option><option value="sim">Sim</option><option value="nao">Não</option></select>
+        <button type="button" id="btnPagarPosnatal" class="primary">💰 Pagar 100 MZN e avaliar</button>
+      </form>
+      <div id="resultPosNatal" class="result-area"></div>
+    </div>
+
+    <!-- OUTROS SERVIÇOS -->
+    <div class="card">
+      <h2>🎯 Serviços Especializados</h2>
+      <div class="service-grid">
+        <div class="service-card"><h4>🧠 Aconselhamento Psicológico</h4><div class="service-price">200 MZN</div><p>45 min</p><button class="btn-agendar" data-servico="psicologico" data-preco="200">Agendar</button></div>
+        <div class="service-card"><h4>👥 Educação de Pares</h4><div class="service-price">300 MZN</div><p>45 min</p><button class="btn-agendar" data-servico="educacao_pares" data-preco="300">Agendar</button></div>
+        <div class="service-card"><h4>👨‍👩‍👧 Educação Parental</h4><div class="service-price">400 MZN</div><p>45 min</p><button class="btn-agendar" data-servico="educacao_parental" data-preco="400">Agendar</button></div>
+        <div class="service-card"><h4>🎤 Palestra para Gestantes</h4><div class="service-price">100 MZN</div><p>Evento online</p><button class="btn-agendar" data-servico="palestra" data-preco="100">Inscrever-se</button></div>
+      </div>
+    </div>
+
+    <!-- BASE DE DADOS -->
+    <div class="card">
+      <h2>🗄️ Base de Dados</h2>
+      <p><strong>Total de consultas registadas:</strong> <span id="totalRegistos">0</span></p>
+      <div class="db-buttons">
+        <button id="exportDBBtn" class="primary">📎 Exportar JSON</button>
+        <button id="viewDBBtn" class="secondary">🔍 Ver registos</button>
+        <button id="clearDBBtn" style="background:#ccc;">🗑️ Limpar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-area">
+    <div class="canvas-3d" id="threeContainer"></div>
+    <div class="chat-box">
+      <h3>💬 Chat Educativo (3 perguntas grátis)</h3>
+      <div class="chat-history" id="chatHistory">
+        <div class="message bot-msg">🌼 Olá! Eu sou o assistente Mãe Terra Kids. Estou aqui para responder às suas dúvidas sobre todo o processo: desde a concepção, gravidez, parto, desenvolvimento do bebé, criança, até à adolescência. Tem direito a 3 perguntas gratuitas. Como posso ajudar?</div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Ex.: Como engravidar? Sintomas de gravidez? Desenvolvimento do bebé aos 6 meses? Puberdade...">
+        <button id="sendChatBtn" class="primary">Enviar</button>
+      </div>
+      <div id="premiumBanner" class="premium-banner">
+        ⚠️ Atingiu o limite de 3 perguntas gratuitas.<br>
+        <button id="subscribePremiumBtn" class="primary" style="margin-top:8px;">💎 Assinar Premium (250 MZN/mês)</button>
+      </div>
+      <a href="https://wa.me/258845856602" target="_blank" class="whatsapp-link">📲 WhatsApp 24h: 845856602</a>
+    </div>
+  </div>
+</div>
+<footer>© 2026 Mãe Terra Kids – Pagamentos: M-Pesa 845856602 / E-mola 873850324 | Conhecimento da concepção à adolescência</footer>
+
+<!-- MODAIS -->
+<div id="modalPagamento" class="modal">
+  <div class="modal-content">
+    <h2>💳 Pagamento e Agendamento</h2>
+    <div id="modalServicoInfo"></div>
+    <div class="form-group"><label>Seu nome completo</label><input type="text" id="pagNome" required></div>
+    <div class="form-group"><label>Contacto (telefone/email)</label><input type="text" id="pagContacto" required></div>
+    <div class="form-group"><label>Data e hora desejada (se aplicável)</label><input type="datetime-local" id="pagDataHora"></div>
+    <div class="form-group"><label>Número de transacção (M-Pesa/E-mola)</label><input type="text" id="pagComprovativo" placeholder="Ex: MP123456789" required></div>
+    <button id="btnConfirmarPagamento" class="primary">✅ Confirmar Pagamento</button>
+    <button id="btnFecharModal" class="secondary">Cancelar</button>
+  </div>
+</div>
+
+<div id="modalFactura" class="modal">
+  <div class="modal-content">
+    <h2>🧾 Factura / Recibo</h2>
+    <div id="facturaContent"></div>
+    <div id="thankyouMessage" class="thankyou-message" style="display:none;">🙏 Agradecemos pela sua escolha! A Mãe Terra Kids confirma o seu pagamento. Em breve receberá a confirmação por WhatsApp.</div>
+    <button id="btnFecharFactura" class="primary">Fechar</button>
+  </div>
+</div>
+
+<div id="modalDB" class="modal">
+  <div class="modal-content">
+    <h2>📋 Consultas registadas</h2>
+    <div id="modalDBList"></div>
+    <button id="closeModalBtn">Fechar</button>
+  </div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<script type="module">
+  import * as THREE from 'three';
+
+  // ----------------------------- 3D (mesmo código) -----------------------------
+  function init3D() {
+    const container = document.getElementById('threeContainer');
+    if (!container) return;
+    const w = container.clientWidth, h = container.clientHeight;
+    const scene = new THREE.Scene(); scene.background = new THREE.Color(0xd9e6c3);
+    const camera = new THREE.PerspectiveCamera(45, w/h, 0.1, 1000);
+    camera.position.set(0, 0, 2.5);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(w, h);
+    container.appendChild(renderer.domElement);
+    const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#5b8c5a'; ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = '#f4a261'; ctx.beginPath(); ctx.arc(256, 256, 180, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#2a6b3c'; ctx.font = 'bold 70px "Segoe UI"'; ctx.fillText("🌱", 210, 310);
+    ctx.fillStyle = '#fff'; ctx.font = '24px sans-serif'; ctx.fillText("Mãe Terra", 190, 450);
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.2 });
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.9, 64, 64), material);
+    scene.add(sphere);
+    const ringGeo = new THREE.TorusGeometry(1.1, 0.03, 64, 200);
+    const ringMat = new THREE.MeshStandardMaterial({ color: 0xf4a261 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI/2;
+    scene.add(ring);
+    const ambient = new THREE.AmbientLight(0x404060);
+    scene.add(ambient);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(1,2,1);
+    scene.add(dirLight);
+    function animate() {
+      requestAnimationFrame(animate);
+      sphere.rotation.y += 0.008;
+      sphere.rotation.x += 0.003;
+      ring.rotation.z += 0.005;
+      renderer.render(scene, camera);
+    }
+    animate();
+    window.addEventListener('resize', () => {
+      const nw = container.clientWidth, nh = container.clientHeight;
+      renderer.setSize(nw, nh);
+      camera.aspect = nw/nh;
+      camera.updateProjectionMatrix();
+    });
+  }
+  init3D();
+
+  // ----------------------------- BASE DE DADOS -----------------------------
+  let consultasDB = [];
+  function loadDB() {
+    const stored = localStorage.getItem('maeterra_consultas');
+    consultasDB = stored ? JSON.parse(stored) : [];
+    document.getElementById('totalRegistos').innerText = consultasDB.length;
+  }
+  function saveDB() {
+    localStorage.setItem('maeterra_consultas', JSON.stringify(consultasDB));
+    document.getElementById('totalRegistos').innerText = consultasDB.length;
+  }
+  function addConsulta(tipo, dados, resultado) {
+    consultasDB.push({ id: Date.now(), tipo, dados, resultado, data: new Date().toISOString() });
+    saveDB();
+  }
+  function exportDB() {
+    const dataStr = JSON.stringify(consultasDB, null, 2);
+    const blob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `maeterra_consultas_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  function clearDB() {
+    if (confirm('Apagar todas as consultas?')) { consultasDB = []; saveDB(); alert('Base limpa!'); }
+  }
+  function showDBModal() {
+    const listDiv = document.getElementById('modalDBList');
+    if (consultasDB.length === 0) listDiv.innerHTML = '<p>Nenhuma consulta registada.</p>';
+    else {
+      listDiv.innerHTML = consultasDB.map(c => `<div style="border-bottom:1px solid #ccc; padding:8px;"><strong>${c.tipo === 'pre-natal' ? '🤰 Pré-Natal' : c.tipo === 'pos-natal' ? '👶 Pós-Natal' : c.tipo}</strong> - ${new Date(c.data).toLocaleString()}<br>${JSON.stringify(c.dados)}<br><em>Resultado: ${JSON.stringify(c.resultado)}</em></div>`).join('');
+    }
+    document.getElementById('modalDB').style.display = 'flex';
+  }
+  document.getElementById('exportDBBtn').addEventListener('click', exportDB);
+  document.getElementById('clearDBBtn').addEventListener('click', clearDB);
+  document.getElementById('viewDBBtn').addEventListener('click', showDBModal);
+  document.getElementById('closeModalBtn').addEventListener('click', () => document.getElementById('modalDB').style.display = 'none');
+
+  // ----------------------------- SISTEMA DE PAGAMENTO -----------------------------
+  let servicosPagos = JSON.parse(localStorage.getItem('maeterra_servicos_pagos') || '{}');
+  function saveServicosPagos() { localStorage.setItem('maeterra_servicos_pagos', JSON.stringify(servicosPagos)); }
+
+  let currentPaymentType = null;
+  let currentServicoNome = '';
+  let currentValor = 0;
+  let currentCallback = null;
+
+  function abrirModalPagamento(tipo, nome, valor, callback) {
+    currentPaymentType = tipo;
+    currentServicoNome = nome;
+    currentValor = valor;
+    currentCallback = callback;
+    document.getElementById('modalServicoInfo').innerHTML = `<p><strong>${nome}</strong><br>Valor: ${valor} MZN</p><p>Realize o pagamento para <strong>M-Pesa 845856602</strong> ou <strong>E-mola 873850324</strong> e insira o número de transacção.</p>`;
+    document.getElementById('pagNome').value = '';
+    document.getElementById('pagContacto').value = '';
+    document.getElementById('pagDataHora').value = '';
+    document.getElementById('pagComprovativo').value = '';
+    document.getElementById('modalPagamento').style.display = 'flex';
+  }
+
+  document.getElementById('btnConfirmarPagamento').addEventListener('click', () => {
+    const nome = document.getElementById('pagNome').value.trim();
+    const contacto = document.getElementById('pagContacto').value.trim();
+    const comprovativo = document.getElementById('pagComprovativo').value.trim();
+    const dataHora = document.getElementById('pagDataHora').value;
+    if (!nome || !contacto || !comprovativo) {
+      alert('Preencha nome, contacto e número de transacção.');
+      return;
+    }
+    const factura = {
+      numero: `FT-${Date.now()}`,
+      cliente: nome,
+      contacto,
+      servico: currentServicoNome,
+      valor: currentValor,
+      dataPagamento: new Date().toISOString(),
+      comprovativo,
+      sessaoAgendada: dataHora ? new Date(dataHora).toISOString() : null
+    };
+    const facturaContent = document.getElementById('facturaContent');
+    facturaContent.innerHTML = `
+      <p><strong>Nº Factura:</strong> ${factura.numero}</p>
+      <p><strong>Cliente:</strong> ${factura.cliente}</p>
+      <p><strong>Contacto:</strong> ${factura.contacto}</p>
+      <p><strong>Serviço:</strong> ${factura.servico}</p>
+      <p><strong>Valor pago:</strong> ${factura.valor} MZN</p>
+      <p><strong>Comprovativo:</strong> ${factura.comprovativo}</p>
+      <p><strong>Data:</strong> ${new Date().toLocaleString()}</p>
+      ${factura.sessaoAgendada ? `<p><strong>Sessão agendada para:</strong> ${new Date(factura.sessaoAgendada).toLocaleString()}</p>` : ''}
+    `;
+    document.getElementById('thankyouMessage').style.display = 'block';
+    document.getElementById('modalFactura').style.display = 'flex';
+    document.getElementById('modalPagamento').style.display = 'none';
+
+    if (dataHora) {
+      agendarNotificacao(new Date(dataHora), nome, currentServicoNome);
+    }
+    if (currentCallback) currentCallback();
+    addConsulta('pagamento', { tipo: currentPaymentType, nome, contacto, comprovativo, dataHora }, { status: 'confirmado', valor: currentValor });
+  });
+
+  function agendarNotificacao(dataSessao, nome, servico) {
+    let notif = JSON.parse(localStorage.getItem('maeterra_notificacoes') || '[]');
+    notif.push({ dataSessao: dataSessao.toISOString(), nome, servico, notificado: false });
+    localStorage.setItem('maeterra_notificacoes', JSON.stringify(notif));
+  }
+
+  function verificarNotificacoes() {
+    const notif = JSON.parse(localStorage.getItem('maeterra_notificacoes') || '[]');
+    const agora = new Date();
+    notif.forEach(n => {
+      if (!n.notificado) {
+        const sessao = new Date(n.dataSessao);
+        const diffHoras = (sessao - agora) / (1000*60*60);
+        if (diffHoras <= 24 && diffHoras > 0) {
+          document.getElementById('notification').innerHTML = `🔔 Lembrete: ${n.servico} para ${n.nome} amanhã às ${sessao.toLocaleTimeString()}.`;
+          document.getElementById('notification').style.display = 'block';
+          setTimeout(() => document.getElementById('notification').style.display = 'none', 10000);
+          n.notificado = true;
+        }
+      }
+    });
+    localStorage.setItem('maeterra_notificacoes', JSON.stringify(notif));
+  }
+  setInterval(verificarNotificacoes, 30000);
+
+  document.getElementById('btnFecharFactura').addEventListener('click', () => {
+    document.getElementById('modalFactura').style.display = 'none';
+    document.getElementById('thankyouMessage').style.display = 'none';
+  });
+  document.getElementById('btnFecharModal').addEventListener('click', () => {
+    document.getElementById('modalPagamento').style.display = 'none';
+  });
+
+  // ----------------------------- PRÉ-NATAL (mantido) -----------------------------
+  let prenatalFullAccess = servicosPagos.prenatalFull === true;
+  document.getElementById('btnComprarPrenatal').addEventListener('click', () => {
+    abrirModalPagamento('prenatal', 'Consulta Pré-Natal (estimativas completas)', 50, () => {
+      prenatalFullAccess = true;
+      servicosPagos.prenatalFull = true;
+      saveServicosPagos();
+      alert('Agora pode calcular a idade gestacional e data de parto.');
+      if (!document.getElementById('btnEstimar')) {
+        const btn = document.createElement('button');
+        btn.id = 'btnEstimar';
+        btn.textContent = '📅 Calcular idade gestacional e parto';
+        btn.className = 'secondary';
+        btn.onclick = () => {
+          const dum = document.getElementById('pnDUM').value;
+          if (!dum) { alert('Preencha a DUM.'); return; }
+          const dataDUM = new Date(dum);
+          const diffDias = Math.floor((new Date() - dataDUM) / (1000*60*60*24));
+          const semanas = Math.floor(diffDias/7);
+          const dias = diffDias %7;
+          const dataParto = new Date(dataDUM); dataParto.setDate(dataDUM.getDate() + 280);
+          alert(`Idade gestacional: ${semanas} semanas e ${dias} dias\nData provável do parto: ${dataParto.toLocaleDateString('pt-PT')}`);
+        };
+        document.querySelector('#formPreNatal').appendChild(btn);
+      }
+    });
+  });
+  document.getElementById('btnAvaliarGratuito').addEventListener('click', () => {
+    const nome = document.getElementById('pnNome').value;
+    const idade = parseInt(document.getElementById('pnIdade').value);
+    const local = document.getElementById('pnLocal').value;
+    const peso = parseFloat(document.getElementById('pnPeso').value);
+    const altura = parseFloat(document.getElementById('pnAltura').value);
+    const pa = document.getElementById('pnPA').value;
+    const bcf = document.getElementById('pnBCF').value ? parseInt(document.getElementById('pnBCF').value) : null;
+    if (!nome || isNaN(peso) || isNaN(altura)) { alert('Preencha nome, peso e altura.'); return; }
+    const imc = peso / (altura*altura);
+    let alertas = [];
+    if (bcf && (bcf<110 || bcf>160)) alertas.push('Batimentos fetais alterados.');
+    if (pa) { let [s,d] = pa.split('/'); if (parseInt(s)>=140 || parseInt(d)>=90) alertas.push('Pressão arterial elevada.'); }
+    if (imc < 18.5) alertas.push('IMC baixo – risco nutricional.');
+    else if (imc > 30) alertas.push('Obesidade – risco gestacional.');
+    const resultado = `<h3>Avaliação Pré-Natal (Gratuita)</h3><p><strong>${nome}</strong> (${idade} anos, ${local})</p><p>IMC: ${imc.toFixed(2)}<br>Batimentos: ${bcf || 'não informado'}<br>⚠️ Alertas: ${alertas.join('; ') || 'Nenhum'}</p><p>🔒 Para saber idade gestacional e data de parto, adquira a consulta por 50 MZN.</p>`;
+    document.getElementById('resultPreNatal').innerHTML = resultado;
+    document.getElementById('resultPreNatal').style.display = 'block';
+    addConsulta('pre-natal-gratuito', {nome, idade, local, peso, altura, imc, bcf, pa}, {alertas});
+  });
+
+  // ----------------------------- PÓS-NATAL -----------------------------
+  let posnatalAccess = servicosPagos.posnatal === true;
+  function atualizarStatusPosnatal() {
+    const statusDiv = document.getElementById('posnatalStatus');
+    if (posnatalAccess) {
+      statusDiv.innerHTML = '✅ Consulta pós-natal adquirida. Preencha o formulário e avalie o desenvolvimento.';
+      statusDiv.style.background = '#d4edda';
+    } else {
+      statusDiv.innerHTML = '⚠️ Para aceder à avaliação completa do desenvolvimento psicomotor e linguagem, adquira a consulta por 100 MZN.';
+      statusDiv.style.background = '#f8d7da';
+    }
+  }
+  function avaliarPosNatal() {
+    const nome = document.getElementById('posNome').value;
+    const idadeMeses = parseInt(document.getElementById('posIdade').value);
+    const local = document.getElementById('posLocal').value;
+    const senta = document.getElementById('psimMotor').value;
+    const engatinha = document.getElementById('psimEngatinha').value;
+    const anda = document.getElementById('psimAnda').value;
+    const balbucio = document.getElementById('langBalbucio').value;
+    const palavras = document.getElementById('langPalavras').value;
+    const compreende = document.getElementById('langCompreende').value;
+    if (!nome || isNaN(idadeMeses)) { alert('Preencha nome e idade da criança.'); return; }
+    let alertas = [];
+    if (idadeMeses>=6 && idadeMeses<=8 && senta!=='sim') alertas.push('Atraso motor - sentar');
+    if (idadeMeses>=9 && idadeMeses<=12 && engatinha!=='sim') alertas.push('Atraso no engatinhar');
+    if (idadeMeses>=12 && idadeMeses<=18 && anda!=='sim') alertas.push('Atraso na marcha');
+    if (idadeMeses>=18 && palavras!=='sim') alertas.push('Atraso na linguagem expressiva');
+    const resultadoHTML = `<h3>Resultado Pós-Natal</h3><p><strong>${nome}</strong> (${idadeMeses} meses, ${local})</p><p>✅ Psicomotor: Senta: ${senta} | Engatinha: ${engatinha} | Anda: ${anda}</p><p>🗣️ Linguagem: Balbucio: ${balbucio} | Palavras: ${palavras} | Compreende: ${compreende}</p><p>⚠️ Alertas: ${alertas.join('; ') || 'Nenhum'}</p><p>📌 Orientações: Estimular com brincadeiras, leitura e, se necessário, procurar especialista.</p>`;
+    document.getElementById('resultPosNatal').innerHTML = resultadoHTML;
+    document.getElementById('resultPosNatal').style.display = 'block';
+    addConsulta('pos-natal', {nome, idadeMeses, local, senta, engatinha, anda, balbucio, palavras, compreende}, {alertas});
+  }
+  document.getElementById('btnPagarPosnatal').addEventListener('click', () => {
+    if (posnatalAccess) {
+      avaliarPosNatal();
+    } else {
+      abrirModalPagamento('posnatal', 'Consulta Pós-Natal (avaliação completa)', 100, () => {
+        posnatalAccess = true;
+        servicosPagos.posnatal = true;
+        saveServicosPagos();
+        atualizarStatusPosnatal();
+        avaliarPosNatal();
+      });
+    }
+  });
+
+  // ----------------------------- SERVIÇOS ADICIONAIS -----------------------------
+  document.querySelectorAll('.btn-agendar').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const servico = btn.getAttribute('data-servico');
+      const preco = parseInt(btn.getAttribute('data-preco'));
+      let nome = '';
+      if (servico === 'psicologico') nome = 'Aconselhamento Psicológico (45 min)';
+      else if (servico === 'educacao_pares') nome = 'Educação de Pares (45 min)';
+      else if (servico === 'educacao_parental') nome = 'Educação Parental (45 min)';
+      else if (servico === 'palestra') nome = 'Palestra para Gestantes';
+      abrirModalPagamento(servico, nome, preco, () => {
+        alert(`Serviço "${nome}" confirmado. A factura foi emitida.`);
+      });
+    });
+  });
+
+  // ======================= CHAT COM RESPOSTAS DA CONCEPÇÃO À ADOLESCÊNCIA =======================
+  let chatCount = parseInt(localStorage.getItem('maeterra_chat_count') || '0');
+  let isPremium = localStorage.getItem('maeterra_premium') === 'true';
+
+  const chatHistoryDiv = document.getElementById('chatHistory');
+  const chatInput = document.getElementById('chatInput');
+  const sendChatBtn = document.getElementById('sendChatBtn');
+  const premiumBanner = document.getElementById('premiumBanner');
+  const subscribeBtn = document.getElementById('subscribePremiumBtn');
+
+  function updateChatUI() {
+    if (isPremium) {
+      premiumBanner.classList.remove('show');
+      sendChatBtn.disabled = false;
+      chatInput.disabled = false;
+    } else {
+      if (chatCount >= 3) {
+        premiumBanner.classList.add('show');
+        sendChatBtn.disabled = true;
+        chatInput.disabled = true;
+      } else {
+        premiumBanner.classList.remove('show');
+        sendChatBtn.disabled = false;
+        chatInput.disabled = false;
+      }
+    }
+  }
+
+  function addChatMessage(text, isUser) {
+    const div = document.createElement('div');
+    div.className = `message ${isUser ? 'user-msg' : 'bot-msg'}`;
+    div.textContent = text;
+    chatHistoryDiv.appendChild(div);
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+  }
+
+  // Base de conhecimento abrangente (concepção → adolescência)
+  function getBotResponse(pergunta) {
+    const p = pergunta.toLowerCase();
+    
+    // Concepção / Fertilidade
+    if (p.includes('concepção') || p.includes('engravidar') || p.includes('fertilidade') || p.includes('ovulação') || p.includes('como engravidar')) {
+      return "🤰 Sobre a concepção: A fertilidade da mulher é maior durante o período fértil (cerca de 5 dias antes e no dia da ovulação). Manter relações regulares, ter uma alimentação saudável, evitar tabaco/álcool e gerir o stress aumentam as chances. Se após 1 ano de tentativas (ou 6 meses se mulher >35 anos) não conseguir, procure um ginecologista.";
+    }
+    if (p.includes('ciclo menstrual') || p.includes('menstruação')) {
+      return "📅 O ciclo menstrual dura em média 28 dias, mas pode variar de 21 a 35 dias. A ovulação ocorre cerca de 14 dias antes do próximo período. Aplicativos de calendário podem ajudar a identificar os dias férteis.";
+    }
+    
+    // Gravidez / Trimestres
+    if (p.includes('primeiro trimestre') || p.includes('1º trimestre')) {
+      return "🤱 Primeiro trimestre (0-12 semanas): O embrião desenvolve órgãos principais. Sintomas comuns: náuseas, cansaço, seios doloridos. Importante iniciar ácido fólico, fazer exames de sangue e ecografia de datação.";
+    }
+    if (p.includes('segundo trimestre') || p.includes('2º trimestre')) {
+      return "🤰 Segundo trimestre (13-26 semanas): O bebé começa a mexer-se. A maioria das náuseas diminui. Faça a ecografia morfológica (20-24 semanas) e o teste de glicose (24-28 semanas).";
+    }
+    if (p.includes('terceiro trimestre') || p.includes('3º trimestre')) {
+      return "👶 Terceiro trimestre (27-40 semanas): O crescimento acelera. Pode sentir contrações de treino (Braxton Hicks). Atente aos sinais de parto prematuro (contrações rítmicas, perda de líquido, sangramento).";
+    }
+    if (p.includes('sintomas de gravidez')) {
+      return "⚠️ Os sintomas iniciais incluem atraso menstrual, náuseas, cansaço, aumento da frequência urinária, seios doloridos e alterações de humor. Um teste de farmácia ou exame de sangue confirma a gravidez.";
+    }
+    if (p.includes('desenvolvimento fetal')) {
+      return "🧬 Desenvolvimento fetal: No 1º trimestre formam-se os órgãos; no 2º, o bebé cresce e mexe-se; no 3º, ganha peso e os pulmões amadurecem. Cada semana traz novas conquistas!";
+    }
+    
+    // Parto
+    if (p.includes('parto normal') || p.includes('parto natural')) {
+      return "👶 Parto normal é o mais fisiológico. Ocorre em fases: dilatação, expulsão e dequitação da placenta. Vantagens: recuperação mais rápida, menor risco para o bebé. Converse com o seu obstetra sobre as suas preferências.";
+    }
+    if (p.includes('cesárea') || p.includes('cesariana')) {
+      return "🏥 A cesariana é uma cirurgia indicada por razões médicas (sofrimento fetal, apresentação pélvica, etc.). A recuperação é mais lenta. Discuta sempre os riscos e benefícios com o seu médico.";
+    }
+    if (p.includes('sinais de parto')) {
+      return "🚨 Sinais de trabalho de parto: contrações rítmicas e regulares (a cada 5-10 min), perda do tampão mucoso (sinal com sangue), rotura da bolsa (perda de líquido). Se ocorrer antes das 37 semanas, procure urgência.";
+    }
+    
+    // Recém-nascido (0-2 meses)
+    if (p.includes('recém-nascido') || (p.includes('bebé') && (p.includes('0') || p.includes('primeiros meses')))) {
+      return "🍼 Recém-nascido (0-2 meses): O bebé dorme muito (16-20h/dia), chora para comunicar (fome, desconforto, sono). A amamentação deve ser em livre demanda. Cólicas são comuns – massagem suave na barriga ajuda.";
+    }
+    if (p.includes('amamentação')) {
+      return "🤱 Amamentação: O leite materno é o melhor alimento exclusivo até aos 6 meses. Ofereça o peito sempre que o bebé demonstrar fome (8-12 vezes/dia). Posição correta previne fissuras. Se sentir dor, procure um consultor.";
+    }
+    if (p.includes('cólicas')) {
+      return "😖 Cólicas: Muito comuns até aos 4 meses. Alívio: massagem na barriga em sentido horário, compressa morna, movimentar as perninhas como 'bicicleta' e oferecer o peito. Evite choro excessivo e consulte o pediatra se persistir.";
+    }
+    
+    // Bebé (3-12 meses)
+    if (p.includes('bebé') && (p.includes('3 meses') || p.includes('4 meses') || p.includes('5 meses') || p.includes('6 meses'))) {
+      return "👶 Aos 3-6 meses: O bebé começa a segurar a cabeça, sorri socialmente, agarra objetos. Aos 6 meses, inicia-se a alimentação complementar (papas de fruta, legumes). Mantenha o leite materno ou fórmula.";
+    }
+    if (p.includes('engatinhar') || p.includes('sentar')) {
+      return "🧸 Marcos motores: Aos 6 meses senta com apoio; aos 8-9 meses engatinha; aos 10-12 meses fica de pé com apoio. Cada bebé tem o seu ritmo, mas se notar atrasos significativos, consulte o pediatra.";
+    }
+    if (p.includes('primeiros dentes')) {
+      return "🦷 Os primeiros dentes (geralmente os incisivos inferiores) nascem entre os 6 e 10 meses. Sintomas: gengivas inchadas, baba excessiva, irritabilidade. Ofereça mordedores refrigerados e consulte o odontopediatra.";
+    }
+    
+    // Criança (1-3 anos)
+    if (p.includes('1 ano') || (p.includes('criança') && p.includes('andar'))) {
+      return "🚶 Por volta do 1º ano, a maioria das crianças começa a andar sozinha. A linguagem evolui: primeiras palavras com significado (mamã, papá). Estimule com conversas, leitura e brincadeiras ao ar livre.";
+    }
+    if (p.includes('desfralde') || p.includes('deixar fralda')) {
+      return "🚽 O desfralde geralmente acontece entre os 2 e 3 anos. Sinais de prontidão: a criança avisa quando está molhada, consegue subir as calças sozinha. Seja paciente, use reforços positivos e evite punições.";
+    }
+    if (p.includes('birras') || p.includes('comportamento')) {
+      return "😤 As birras são normais entre 1-3 anos porque a criança ainda não regula emoções. Estratégias: manter a calma, dar opções limitadas, ignorar comportamentos explosivos (desde que seguros). Reforce comportamentos positivos.";
+    }
+    
+    // Pré-escolar (3-5 anos)
+    if (p.includes('pré-escolar') || p.includes('3 anos') || p.includes('4 anos') || p.includes('5 anos')) {
+      return "🎨 Na pré-escola (3-5 anos), a criança desenvolve a linguagem (frases completas), a imaginação e as habilidades sociais. Brincadeiras de faz-de-conta são essenciais. Incentive a autonomia (vestir-se, comer sozinha).";
+    }
+    if (p.includes('preparar para escola')) {
+      return "📚 Preparação para a escola: Conte histórias, estimule a escrita do nome, promova rotinas, ensine a partilhar e a seguir instruções. Visite a escola antecipadamente para reduzir a ansiedade.";
+    }
+    
+    // Idade escolar (6-12 anos)
+    if (p.includes('idade escolar') || p.includes('6 anos') || p.includes('aprender')) {
+      return "📖 Idade escolar (6-12 anos): Fase de consolidação da leitura, escrita e raciocínio lógico. A amizade torna-se muito importante. Incentive hábitos de estudo, actividades físicas e limite o tempo de ecrã.";
+    }
+    if (p.includes('dificuldade de aprendizagem') || p.includes('dislexia')) {
+      return "📚 Dificuldades de aprendizagem podem incluir dislexia, discalculia ou TDAH. Se notar atraso significativo na escola, procure uma avaliação psicopedagógica. Quanto mais cedo a intervenção, melhores os resultados.";
+    }
+    
+    // Adolescência (13-18 anos)
+    if (p.includes('adolescência') || p.includes('adolescente') || p.includes('13 anos') || p.includes('puberdade')) {
+      return "🧠 Adolescência (13-18 anos): Período de mudanças físicas (puberdade), emocionais e sociais. O cérebro ainda está em desenvolvimento (córtex pré-frontal). É normal maior busca por independência, conflitos e questionamento de regras. Mantenha diálogo aberto e respeitoso.";
+    }
+    if (p.includes('educação sexual')) {
+      return "📘 Educação sexual deve começar cedo, de forma adequada à idade. Na adolescência, é importante falar sobre consentimento, métodos contraceptivos, prevenção de ISTs e saúde emocional. A conversa franca reduz riscos.";
+    }
+    if (p.includes('saúde mental adolescente') || p.includes('depressão adolescente')) {
+      return "🧠 A saúde mental do adolescente merece atenção. Sinais de alerta: isolamento social, irritabilidade intensa, queda no rendimento escolar, alterações no sono/apetite. Procure ajuda psicológica se necessário. A família é a base de apoio.";
+    }
+    if (p.includes('menstruação adolescente')) {
+      return "🩸 A menarca (primeira menstruação) ocorre geralmente entre os 10 e 15 anos. Explique à adolescente o que esperar, os cuidados de higiene e a importância de falar com a mãe ou responsável.";
+    }
+    
+    // Resposta genérica quando não encontra correspondência
+    return "🌱 Obrigado pela sua pergunta! Para questões mais específicas sobre desenvolvimento humano (da concepção à adolescência), assine o plano Premium e tenha respostas detalhadas. Lembre-se que cada criança tem o seu ritmo. Consulte sempre profissionais de saúde.";
+  }
+
+  async function sendMessage() {
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+    if (!isPremium && chatCount >= 3) {
+      addChatMessage("🔒 Excedeu o limite de 3 perguntas gratuitas. Assine o plano Premium para continuar a conversar e obter respostas ilimitadas.", false);
+      return;
+    }
+    addChatMessage(msg, true);
+    chatInput.value = '';
+
+    if (!isPremium) {
+      chatCount++;
+      localStorage.setItem('maeterra_chat_count', chatCount);
+      updateChatUI();
+    }
+
+    const resposta = getBotResponse(msg);
+    setTimeout(() => {
+      addChatMessage(resposta, false);
+      if (!isPremium && chatCount === 3) {
+        setTimeout(() => {
+          addChatMessage("⚠️ As suas 3 perguntas gratuitas terminaram. Para continuar a esclarecer todas as suas dúvidas sobre a jornada da concepção à adolescência, assine o plano Premium por apenas 250 MZN/mês. Clique no botão abaixo para assinar.", false);
+          premiumBanner.classList.add('show');
+        }, 800);
+      }
+    }, 600);
+  }
+
+  sendChatBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+  subscribeBtn.addEventListener('click', () => {
+    abrirModalPagamento('premium', 'Plano Premium (chat ilimitado + todas as estimativas)', 250, () => {
+      isPremium = true;
+      localStorage.setItem('maeterra_premium', 'true');
+      chatCount = 0;
+      localStorage.setItem('maeterra_chat_count', '0');
+      updateChatUI();
+      addChatMessage("🎉 Premium ativado! Agora pode fazer perguntas ilimitadas sobre qualquer fase do desenvolvimento, da concepção à adolescência. Obrigado por confiar na Mãe Terra Kids.", false);
+    });
+  });
+
+  // ----------------------------- OFFLINE (Service Worker) -----------------------------
+  if ('serviceWorker' in navigator) {
+    const swCode = `self.addEventListener('fetch', event => { event.respondWith(fetch(event.request).catch(() => caches.match(event.request))); });`;
+    const blob = new Blob([swCode], {type: 'application/javascript'});
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).then(() => console.log('Service Worker offline registado'));
+  }
+
+  // Inicialização
+  loadDB();
+  atualizarStatusPosnatal();
+  verificarNotificacoes();
+  updateChatUI();
+
+  document.querySelectorAll('.payment-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const number = btn.getAttribute('data-number');
+      navigator.clipboard.writeText(number);
+      alert(`Número ${number} copiado! Realize o pagamento e depois insira o comprovativo.`);
+    });
+  });
+</script>
+</body>
+</html>
